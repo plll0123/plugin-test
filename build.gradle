@@ -1,25 +1,54 @@
 plugins {
-	id 'java'
+    id 'java'
 }
 
 group = 'com.gradle'
 version = '0.0.1-SNAPSHOT'
 
-allprojects{
-	apply plugin: 'java'
-	java {
-		sourceCompatibility = '17'
-	}
+allprojects {
+    apply plugin: 'java'
+    java {
+        sourceCompatibility = '17'
+    }
 
-	repositories {
-		mavenCentral()
-	}
+    repositories {
+        mavenCentral()
+    }
 
-	dependencies {
-	}
+    dependencies {
+    }
 
-	tasks.register("deleteUnwantedSrc${project.name.capitalize()}") {
-		if (!project.childProjects.isEmpty() && file("${project.projectDir}/src").exists())
-			delete "${project.projectDir}/src"
-	}
+//	tasks.create("deleteUnwantedSrc${project.name.capitalize()}") {
+//		doLast {
+//			def isParentModule = !project.childProjects.isEmpty()
+//			if (isParentModule) {
+//				def hasSrcFolder = file("${project.projectDir}/src").exists()
+//				if (hasSrcFolder) {
+//					delete "${project.projectDir}/src"
+//				}
+//				if (!project.rootProject) {
+//					delete "${project.projectDir}/gradle"
+//				}
+//			}
+//		}
+//	}
+
+    tasks.register("cleanUpIntermediateModules") {
+        project.subprojects.each { subproject ->
+            def isIntermediateModule = !subproject.childProjects.isEmpty()
+            if (isIntermediateModule) {
+                def srcFolder = new File("${subproject.projectDir}/src")
+                if (srcFolder.exists()) {
+                    println "Deleting src directory in ${subproject.name}"
+                    srcFolder.deleteDir()
+                }
+
+                def buildFile = new File("${subproject.projectDir}/build.gradle")
+                if (buildFile.exists()) {
+                    println "Deleting build.gradle in ${subproject.name}"
+                    buildFile.delete()
+                }
+            }
+        }
+    }
 }

@@ -1,7 +1,1 @@
 rootProject.name = 'plugin-test'
-include 'test1'
-include 'test2'
-include 'test3'
-include 'test1:t1'
-findProject(':test1:t1')?.name = 't1'
-
