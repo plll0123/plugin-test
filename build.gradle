@@ -1,0 +1,25 @@
+plugins {
+	id 'java'
+}
+
+group = 'com.gradle'
+version = '0.0.1-SNAPSHOT'
+
+allprojects{
+	apply plugin: 'java'
+	java {
+		sourceCompatibility = '17'
+	}
+
+	repositories {
+		mavenCentral()
+	}
+
+	dependencies {
+	}
+
+	tasks.register("deleteUnwantedSrc${project.name.capitalize()}") {
+		if (!project.childProjects.isEmpty() && file("${project.projectDir}/src").exists())
+			delete "${project.projectDir}/src"
+	}
+}
